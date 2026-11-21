@@ -25,6 +25,7 @@ import {
   TiffBitDepth,
   WatermarkAnchor,
   COLOR_SPACE_FILE_FORMATS,
+  DEFAULT_HDR_HEADROOM,
   HDR_FILE_FORMATS,
   EXPORT_COLOR_SPACES,
   ExportColorSpace,
@@ -36,8 +37,7 @@ import { Panel } from '../../../types/ui';
 import ExportPresetsList from './ExportPresetsList';
 import { useExportSettings } from '../../../hooks/useExportSettings';
 import { useOsPlatform } from '../../../hooks/useOsPlatform';
-import { DEFAULT_HDR_HEADROOM, useDisplayStatus } from '../../../hooks/useDisplayStatus';
-import { useSettingsStore } from '../../../store/useSettingsStore';
+import { useDisplayStatus } from '../../../hooks/useDisplayStatus';
 import Text from '../../ui/Text';
 import { TextColors, TextVariants, TextWeights } from '../../../types/typography';
 import { useEditorStore } from '../../../store/useEditorStore';
@@ -82,13 +82,20 @@ interface ValidatedNumberInputProps {
   disabled: boolean;
   field: ParsedTextField<number>;
   max?: number;
+  background?: string;
 }
 
-function ValidatedNumberInput({ ariaLabel, disabled, field, max }: ValidatedNumberInputProps) {
+function ValidatedNumberInput({
+  ariaLabel,
+  disabled,
+  field,
+  max,
+  background = 'bg-surface',
+}: ValidatedNumberInputProps) {
   return (
     <input
       aria-label={ariaLabel}
-      className={`w-20 bg-surface text-center rounded-md p-2 border focus:ring-accent text-text-secondary focus:text-text-primary ${
+      className={`w-20 ${background} text-center rounded-md p-2 border focus:ring-accent text-text-secondary focus:text-text-primary ${
         field.parsed === null ? 'border-red-500' : 'border-surface focus:border-accent'
       }`}
       disabled={disabled}
@@ -272,6 +279,8 @@ export default function ExportPanel({
     setColorSpace,
     hdr,
     setHdr,
+    hdrHeadroom,
+    setHdrHeadroom,
     dpi,
     setDpi,
     enableResize,
@@ -409,30 +418,6 @@ export default function ExportPanel({
   const filenameInputRef = useRef<HTMLInputElement>(null);
   const osPlatform = useOsPlatform();
   const displayStatus = useDisplayStatus();
-  const [hdrHeadroom, setHdrHeadroom] = useState(appSettings?.hdrHeadroom ?? DEFAULT_HDR_HEADROOM);
-  const pendingHdrHeadroom = useRef<number | null>(null);
-  useEffect(() => {
-    if (pendingHdrHeadroom.current === null) {
-      setHdrHeadroom(appSettings?.hdrHeadroom ?? DEFAULT_HDR_HEADROOM);
-    }
-  }, [appSettings?.hdrHeadroom]);
-  const saveHdrHeadroom = useMemo(
-    () =>
-      debounce((value: number) => {
-        const { appSettings: latest, handleSettingsChange } = useSettingsStore.getState();
-        if (latest) {
-          handleSettingsChange({ ...latest, hdrHeadroom: value });
-        }
-        pendingHdrHeadroom.current = null;
-      }, 200),
-    [],
-  );
-  useEffect(() => () => saveHdrHeadroom.flush(), [saveHdrHeadroom]);
-  const handleHdrHeadroomChange = (value: number) => {
-    pendingHdrHeadroom.current = value;
-    setHdrHeadroom(value);
-    saveHdrHeadroom(value);
-  };
   const hdrPreviewHint = !displayStatus
     ? null
     : !displayStatus.hdrActive
@@ -552,6 +537,7 @@ export default function ExportPanel({
       tiffBitDepth,
       colorSpace,
       hdr,
+      hdrHeadroom,
       keepMetadata,
       preserveTimestamps,
       preserveFolders,
@@ -608,6 +594,7 @@ export default function ExportPanel({
     tiffBitDepth,
     colorSpace,
     hdr,
+    hdrHeadroom,
     enableResize,
     resizeMode,
     resizeValue,
@@ -660,6 +647,7 @@ export default function ExportPanel({
       tiffBitDepth,
       colorSpace,
       hdr,
+      hdrHeadroom,
       keepMetadata,
       preserveTimestamps,
       preserveFolders,
@@ -1246,23 +1234,27 @@ export default function ExportPanel({
                           />
                         )}
                         {HDR_FILE_FORMATS.includes(fileFormat) && hdr && (
-                          <div className={isExporting ? 'opacity-50 pointer-events-none' : ''}>
+                          <div className="pl-2 border-l-2 border-card-active">
                             <Slider
-                              defaultValue={DEFAULT_HDR_HEADROOM}
-                              label={t('settings.processing.hdr.headroom')}
-                              max={4}
+                              label={
+                                <span
+                                  data-tooltip={[t('export.file.hdrHeadroomHint'), hdrPreviewHint]
+                                    .filter(Boolean)
+                                    .join(' ')}
+                                >
+                                  {t('export.file.hdrHeadroom')}
+                                </span>
+                              }
                               min={1}
-                              onChange={(e) => handleHdrHeadroomChange(Number(e.target.value))}
+                              max={4}
                               step={0.1}
                               value={hdrHeadroom}
+                              defaultValue={DEFAULT_HDR_HEADROOM}
+                              onChange={(e) => setHdrHeadroom(Number(e.target.value))}
                               fillOrigin="min"
                               suffix=" EV"
+                              disabled={isExporting}
                             />
-                            {hdrPreviewHint && (
-                              <Text variant={TextVariants.small} className="mt-1">
-                                {hdrPreviewHint}
-                              </Text>
-                            )}
                           </div>
                         )}
                         {COLOR_SPACE_FILE_FORMATS.includes(fileFormat) && !(hdr && fileFormat === FileFormats.Jxl) && (
@@ -1286,6 +1278,7 @@ export default function ExportPanel({
                             </Text>
                             <ValidatedNumberInput
                               ariaLabel={t('export.file.resolution')}
+                              background="bg-bg-secondary"
                               disabled={isExporting}
                               field={dpiField}
                               max={MAX_EXPORT_DPI}

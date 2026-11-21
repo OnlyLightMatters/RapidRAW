@@ -696,7 +696,7 @@ RapidRAW supports automatic lens profile detection, distortion, transverse chrom
 <details>
 <summary><strong>Supported Languages</strong></summary>
 
-RapidRAW is fully translated into the following 17 languages:
+RapidRAW is fully translated into the following 18 languages:
 
 - 🇬🇧 **English**
 - 🇪🇸 **Català**
@@ -709,6 +709,7 @@ RapidRAW is fully translated into the following 17 languages:
 - 🇳🇱 **Nederlands**
 - 🇵🇱 **Polski**
 - 🇵🇹 **Português**
+- 🇸🇪 **Svenska**
 - 🇷🇺 **Русский**
 - 🇺🇦 **Українська**
 - 🇯🇵 **日本語**
@@ -1005,6 +1006,7 @@ rapidraw export /path/to/photos --output /path/to/output_dir --export-original
 | `--tiff-bit-depth <n>`     | TIFF channel depth (`8` or `16`)                                       | `16`              |
 | `--color-space <space>`    | Color space for JPEG, PNG, TIFF, WebP and JXL output                   | `srgb`            |
 | `--hdr`                    | Export HDR: JPEG with a gain map, or JXL as PQ / Rec. 2020             | `false`           |
+| `--hdr-headroom <stops>`   | HDR headroom of the exported file in stops above SDR white (1 to 4)    | `2`               |
 | `--keep-metadata`          | Retain EXIF/capture metadata in exported files                         | `false`           |
 | `--adjustments <path>`     | Path to a custom JSON file containing adjustments to override sidecars | _(Auto-detected)_ |
 | `--export-original`        | Also export the unedited original as `<name>_original`                 | `false`           |
@@ -1056,17 +1058,17 @@ If the application crashes immediately when you try to start editing a picture, 
 <details>
 <summary>Linux Wayland/WebKit Crash</summary>
 
-If RapidRAW crashes on Wayland (e.g. GNOME + NVIDIA), try launching it with:
+RapidRAW works around the known NVIDIA problems on its own: on X11 with the proprietary NVIDIA driver it routes the webview through shared memory, and on Wayland it prepares the window for NVIDIA's explicit sync before the first frame.
+
+If you still get a blank window or a crash on launch, turn on **Linux Compatibility Mode** in Settings → Processing, or launch it with:
 
 ```bash
-WEBKIT_DISABLE_DMABUF_RENDERER=1 RapidRAW
+WEBKIT_DMABUF_RENDERER_FORCE_SHM=1 RapidRAW
 ```
 
-or
+If that does not help, try `__NV_DISABLE_EXPLICIT_SYNC=1` on Wayland, or `WEBKIT_DISABLE_DMABUF_RENDERER=1` as a last resort. The last one switches the webview to full software rendering, and on WebKitGTK 2.54.0 to 2.54.2 parts of the window may only repaint when you hover over them.
 
-```bash
-WEBKIT_DISABLE_COMPOSITING_MODE=1 RapidRAW
-```
+If you set `WEBKIT_DMABUF_RENDERER_FORCE_SHM` or `WEBKIT_DISABLE_DMABUF_RENDERER` yourself, RapidRAW leaves the webview transport alone, including in Compatibility Mode.
 
 This issue is related to **WebKit** and **NVIDIA drivers**, not RapidRAW directly. Switching to **X11** or using **AMD / Intel GPUs** may also help.
 
