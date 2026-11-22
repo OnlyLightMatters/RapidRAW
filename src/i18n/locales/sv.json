@@ -296,7 +296,6 @@
     },
     "editor": {
       "autoAdjust": "Justera automatiskt",
-      "autoLensCorrection": "Automatisk objektivkorrigering",
       "autoStraighten": "Räta upp automatiskt",
       "cancel": "Avbryt",
       "closeViewer": "Stäng det andra fönstret",
@@ -305,7 +304,6 @@
       "convertBlackWhite": "Konvertera till svartvitt",
       "convertNegative": "Konvertera negativ",
       "copyAdjustments": "Kopiera justeringar",
-      "cullImage": "Sålla automatiskt",
       "denoise": "Reducera brus",
       "editImage": "Redigera bild",
       "editIn": "Redigera i",
@@ -314,6 +312,7 @@
       "flagPick": "Utvald",
       "flagReject": "Bortvald",
       "frameImage": "Ramredigerare",
+      "lensCorrection": "Objektivkorrigering",
       "mergeHdr": "Sammanfoga till HDR",
       "noLabel": "Ingen etikett",
       "noRating": "Inget betyg",
@@ -326,6 +325,7 @@
       "redo": "Gör om",
       "removeBlackWhite": "Ta bort svartvitt",
       "removeDenoise": "Ta bort brusreducering",
+      "removeLensCorrection": "Ta bort objektivkorrigering",
       "removeNegativeConversion": "Ta bort negativkonvertering",
       "removeSuperResolution": "Ta bort RapidRes",
       "resetAdjustments": "Återställ justeringar",
@@ -376,8 +376,6 @@
       "addToAlbum": "Lägg till i album",
       "autoAdjust_one": "Justera automatiskt",
       "autoAdjust_other": "Justera automatiskt",
-      "autoLensCorrection_one": "Automatisk objektivkorrigering",
-      "autoLensCorrection_other": "Automatisk objektivkorrigering",
       "autoStraighten_one": "Räta upp automatiskt",
       "autoStraighten_other": "Räta upp automatiskt",
       "collage_one": "Ramredigerare",
@@ -398,6 +396,8 @@
       "enable": "Aktivera",
       "exportImage_one": "Exportera bild",
       "exportImage_other": "Exportera {{count}} bilder",
+      "lensCorrection_one": "Objektivkorrigering",
+      "lensCorrection_other": "Objektivkorrigering",
       "noAlbums": "Inga album tillgängliga",
       "pasteAdjustments_one": "Klistra in justeringar",
       "pasteAdjustments_other": "Klistra in justeringar i {{count}} bilder",
@@ -1018,6 +1018,13 @@
       "mb": "MB",
       "tb": "TB"
     },
+    "conflict": {
+      "createUnique": "Behåll båda (_1, _2)",
+      "label": "Om filen finns",
+      "overwrite": "Skriv över",
+      "overwriteIfChanged": "Skriv över om ändrad",
+      "skip": "Hoppa över"
+    },
     "destination": {
       "customFolder": "Valfri mapp",
       "originalFolder": "Originalbildens mapp",
@@ -1086,6 +1093,7 @@
       "watermark": "Vattenstämpel"
     },
     "status": {
+      "allSkipped": "Alla bilder hoppades över",
       "cancelExport": "Avbryt export",
       "cancelled": "Exporten avbröts",
       "cancelling": "Avbryter export…",
@@ -1102,7 +1110,8 @@
       "failed": "Exporten misslyckades",
       "noImageSelected": "Ingen bild har valts för export.",
       "noImagesSelected": "Inga bilder har valts.",
-      "success": "Exporten lyckades!"
+      "success": "Exporten lyckades!",
+      "successWithSkipped": "{{exported}} exporterade, {{skipped}} överhoppade"
     },
     "title": "Exportera",
     "watermark": {
@@ -1432,6 +1441,8 @@
       },
       "openInLibrary": "Öppna i biblioteket",
       "recent": "Senaste",
+      "skipped_one": "överhoppad: {{count}}",
+      "skipped_other": "överhoppade: {{count}}",
       "title": "Jobb"
     },
     "reject": {
@@ -1748,7 +1759,6 @@
       "openInEditor": "Öppna i redigeraren",
       "outputInfo": "{{images}} bilder · {{width}} × {{height}} px",
       "result": "Resultat",
-      "retry": "Försök igen",
       "save": "Spara",
       "saving": "Sparar…",
       "speedNotice": "Detta kan ta några minuter beroende på antalet bilder och deras storlek.",
@@ -2314,7 +2324,6 @@
       },
       "rawDecoding": "RAW-avkodning",
       "rawDecodingDesc": "Välj var RAW-filer avkodas. ”Automatiskt” använder GPU:n och växlar till CPU:n om GPU:n inte kan hantera dina bilder. ”GPU” försöker alltid med GPU:n först. ”CPU” är långsammare men fungerar på alla system.",
-      "rawDecodingUnavailable": "Den här GPU:n kan inte köra RAW-avkodningen, så RAW-filer avkodas på CPU:n.",
       "rawDecodingFallback": "GPU:n misslyckades med stora RAW-filer, så filer på {{megapixels}} MP och större framkallas på CPU:n tills vidare.",
       "rawDecodingFallbackRetry": "Försök med GPU:n igen",
       "rawDecodingOptions": {
@@ -2322,6 +2331,7 @@
         "cpu": "CPU",
         "gpu": "GPU"
       },
+      "rawDecodingUnavailable": "Den här GPU:n kan inte köra RAW-avkodningen, så RAW-filer avkodas på CPU:n.",
       "renderScale": "Skala för renderingsupplösning",
       "renderScaleDesc": "Skalar renderingsupplösningen i förhållande till din bildskärm. Lägre värden förbättrar prestandan på högupplösta skärmar på bekostnad av viss skärpa.",
       "restartRequired": "Ändringar av bearbetningsmotorn kräver att programmet startas om för att träda i kraft.",
